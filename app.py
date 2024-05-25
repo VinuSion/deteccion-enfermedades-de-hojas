@@ -30,16 +30,26 @@ if uploaded_file is not None:
         if img is None:
             st.error("Error al decodificar la imagen. Asegúrese de subir un archivo de imagen válido.")
         else:
-            normalized_image = np.expand_dims(cv.resize(cv.cvtColor(img, cv.COLOR_BGR2RGB), (150, 150)), axis=0)
+            st.image(img, caption='Uploaded Image', use_column_width=True)
+
+            # Resize and preprocess the image
+            resized_img = cv.resize(img, (150, 150))
+            normalized_image = resized_img / 255.0  # Normalize pixel values to [0, 1]
 
             # Debug: check the shape of the input image
             st.write(f"Shape of the input image: {normalized_image.shape}")
 
-            predictions = model.predict(normalized_image)
-            st.image(image_bytes)
-            if predictions[0][np.argmax(predictions)]*100 >= 80:
-                st.write(f"El resultado es: {label_name[np.argmax(predictions)]}")
+            # Make prediction
+            predictions = model.predict(np.expand_dims(normalized_image, axis=0))
+
+            # Debug: print predictions
+            st.write(f"Predictions: {predictions}")
+
+            # Display result
+            max_prob_index = np.argmax(predictions)
+            if predictions[0][max_prob_index] * 100 >= 80:
+                st.write(f"El resultado es: {label_name[max_prob_index]}")
             else:
-                st.write("La prediccion de esta imagen es menor a 80%. Pruebe otra imagen con un tipo de las mencionadas anteriormente.")
+                st.write("La predicción de esta imagen es menor al 80%. Pruebe otra imagen con un tipo de las mencionadas anteriormente.")
     except Exception as e:
         st.error(f"Error procesando la imagen o realizando la predicción: {e}")
