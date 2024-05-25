@@ -1,5 +1,7 @@
 # PROYECTO IA - T02 (William Gomez & Luis Enrique)
 
+## Aplicacion Publica: https://deteccion-enfermedades-de-hojas.streamlit.app
+
 # Prediccion de Enfermedades de Hojas de Planta utilizando Deep Learning
 
 Este proyecto es un sistema de detección de enfermedades en hojas de planta que utiliza técnicas de aprendizaje profundo, incluyendo el aprendizaje por transferencia (para trasladar el modelo pre-entrenado) para identificar y clasificar 33 tipos diferentes de enfermedades en hojas. El modelo ha sido entrenado en un gran conjunto de datos de imágenes y está diseñado para ayudar a profesionales y entusiastas de la agricultura a diagnosticar enfermedades de plantas de manera mas rápida y precisa.
