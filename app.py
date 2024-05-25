@@ -14,15 +14,32 @@ st.write("""El modelo de detección de enfermedades de hojas de planta se ha con
 
 st.write("Por favor, introduzca solo imágenes de hojas de Manzana, Cereza, Maíz, Uva, Durazno, Pimienta, Papa, Fresa y Tomate. De lo contrario, el modelo no funcionará perfectamente.")
 
-model = keras.models.load_model('Entrenamiento/modelo/Enfermedades_de_hoja.h5')
+# Load the model
+try:
+    model = keras.models.load_model('Entrenamiento/modelo/Enfermedades_de_hoja.h5')
+    st.success("Modelo cargado exitosamente!")
+except Exception as e:
+    st.error(f"Error al cargar el modelo: {e}")
+    st.stop()
 
 uploaded_file = st.file_uploader("Subir Una Imagen")
 if uploaded_file is not None:
-    image_bytes = uploaded_file.read()
-    img = cv.imdecode(np.frombuffer(image_bytes, dtype=np.uint8), cv.IMREAD_COLOR)
-    normalized_image = np.expand_dims(cv.resize(cv.cvtColor(img, cv.COLOR_BGR2RGB), (150, 150)), axis=0)
-    predictions = model.predict(normalized_image)
-    st.image(image_bytes)
-    if predictions[0][np.argmax(predictions)]*100 >= 80:
-        st.write(f"El resultado es: {label_name[np.argmax(predictions)]}")
-    else:st.write(f"La prediccion de esta imagen es menor a 80%. Pruebe otra imagen con un tipo de las mencionadas anteriormente.")
+    try:
+        image_bytes = uploaded_file.read()
+        img = cv.imdecode(np.frombuffer(image_bytes, dtype=np.uint8), cv.IMREAD_COLOR)
+        if img is None:
+            st.error("Error al decodificar la imagen. Asegúrese de subir un archivo de imagen válido.")
+        else:
+            normalized_image = np.expand_dims(cv.resize(cv.cvtColor(img, cv.COLOR_BGR2RGB), (150, 150)), axis=0)
+
+            # Debug: check the shape of the input image
+            st.write(f"Shape of the input image: {normalized_image.shape}")
+
+            predictions = model.predict(normalized_image)
+            st.image(image_bytes)
+            if predictions[0][np.argmax(predictions)]*100 >= 80:
+                st.write(f"El resultado es: {label_name[np.argmax(predictions)]}")
+            else:
+                st.write("La prediccion de esta imagen es menor a 80%. Pruebe otra imagen con un tipo de las mencionadas anteriormente.")
+    except Exception as e:
+        st.error(f"Error procesando la imagen o realizando la predicción: {e}")
